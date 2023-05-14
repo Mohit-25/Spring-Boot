@@ -3,6 +3,7 @@ package com.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 	import org.springframework.web.bind.annotation.RestController;
 
+import com.Bean.ResponseBean;
 import com.Dao.BookDaoImpl;
 import com.Entity.BookEntity;
 import com.Repository.BookRepository;
@@ -86,22 +88,43 @@ public class BookController {
 		return ResponseEntity.ok(book);
 	}
 	
+//	
+//	@PostMapping("/book")
+//	public ResponseEntity<BookEntity> addBook(@RequestBody BookEntity book) {
+//		
+//		List<BookEntity> booklist=bookrepo.findByAuthorAndName(book.getAuthor(), book.getName());
+//		if(!booklist.isEmpty())
+//		{
+//			return ResponseEntity.unprocessableEntity().body(book); 
+////			return new ResponseEntity<BookEntity>(book,HttpStatus.UNPROCESSABLE_ENTITY);
+//		}
+//		else
+//		{
+//			bookrepo.save(book);
+//			return ResponseEntity.ok(book);
+//			
+//		}
+//     }
 	
 	@PostMapping("/book")
-	public ResponseEntity<BookEntity> addBook(@RequestBody BookEntity book) {
-		
-		List<BookEntity> booklist=bookrepo.findByAuthorAndName(book.getAuthor(), book.getName());
-		if(!booklist.isEmpty())
-		{
-			return ResponseEntity.notFound().build(); 
-		}
-		else
-		{
-			bookrepo.save(book);
-			return ResponseEntity.ok(book);
+	public ResponseEntity<ResponseBean<BookEntity>> addbook(@RequestBody BookEntity book)
+	{
+		 List<BookEntity> booklist= bookrepo.findByAuthorAndName(book.getAuthor(),book.getName());
+		 ResponseBean<BookEntity> res=new ResponseBean<>();
+		 if(booklist.isEmpty())
+		 {
 			
-		}
-
+			 res.setData(book);
+			 res.setMsg("Signup Done");
+			 bookrepo.save(book);
+			 return ResponseEntity.ok(res);
+		 }
+		 else
+		 {
+			 res.setData(book);
+			 res.setMsg("Please Enter Valid Book");
+			 return ResponseEntity.unprocessableEntity().body(res);
+		 }
 		
 	}
 	
